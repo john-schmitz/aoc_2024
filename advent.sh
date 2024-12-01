@@ -22,16 +22,31 @@ cat > main.go << 'EOL'
 package main
 
 import (
-	"fmt"
+	"bufio"
+	"os"
 )
 
-func solve(input string) int {
-	return 0
+func partOne(filePath string) (int, error) {
+	return 0, nil
 }
 
-func main() {
-	result := solve("")
-	fmt.Printf("Result: %v\n", result)
+func partTwo(filePath string) (int, error) {
+	return 0, nil
+}
+
+func getLines(path string) ([]string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	var lines []string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	return lines, scanner.Err()
 }
 EOL
 
@@ -43,24 +58,64 @@ import (
 	"testing"
 )
 
-func TestSolve(t *testing.T) {
+func TestPartOne(t *testing.T) {
 	testCases := []struct {
-		name     string
-		input    string
+		desc     string
+		filepath string
 		expected int
 	}{
 		{
-			name:     "example 1",
-			input:    "",
-			expected: 0,
+			desc:     "sample",
+			filepath: "sample.txt",
+			expected: -1,
+		},
+		{
+			desc:     "input",
+			filepath: "input.txt",
+			expected: -1,
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			result := solve(tc.input)
-			if result != tc.expected {
-				t.Errorf("expected %v, got %v", tc.expected, result)
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			result, err := partOne(tC.filepath)
+			if err != nil {
+				panic(err)
+			}
+
+			if result != tC.expected {
+				t.Errorf("Expected partOne(%s) = %d. But got %d", tC.filepath, tC.expected, result)
+			}
+		})
+	}
+}
+
+func TestPartTwo(t *testing.T) {
+	testCases := []struct {
+		desc     string
+		filepath string
+		expected int
+	}{
+		{
+			desc:     "sample",
+			filepath: "sample.txt",
+			expected: -1,
+		},
+		{
+			desc:     "input",
+			filepath: "input.txt",
+			expected: -1,
+		},
+	}
+
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			result, err := partTwo(tC.filepath)
+			if err != nil {
+				panic(err)
+			}
+			if result != tC.expected {
+				t.Errorf("Expected partTwo(%s) = %d. But got %d", tC.filepath, tC.expected, result)
 			}
 		})
 	}
