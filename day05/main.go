@@ -112,37 +112,44 @@ func partTwo(filePath string) (int, error) {
 			continue
 		}
 
-		fmt.Println("Is invalid", update)
+		valid := transformInvalidUpdate(update, rules)
+		mid := len(valid) / 2
 
-		for z := len(update) - 1; z > 0; z-- {
-			n := update[z]
-			rule := rules[n]
-
-		outer:
-			for j := z - 1; j >= 0; j-- {
-				for _, v := range rule {
-					if update[j] != v {
-						continue
-					}
-					new_update := make([]int, len(update))
-					copy(new_update, update)
-
-					new_update[z], new_update[j] = new_update[j], new_update[z]
-
-					if isValidUpdate(new_update, rules) {
-						mid := len(new_update) / 2
-						fmt.Println(update, new_update, new_update[mid])
-
-						total += new_update[mid]
-						break outer
-					}
-				}
-			}
-		}
-
+		total += valid[mid]
 	}
 
 	return total, nil
+}
+
+func transformInvalidUpdate(update []int, rules map[int][]int) []int {
+	result := make([]int, len(update))
+	copy(result, update)
+
+	for i := len(result) - 1; i > 0; i-- {
+		n := result[i]
+		rule := rules[n]
+
+	outer:
+		for j := i - 1; j >= 0; j-- {
+			for _, v := range rule {
+				if result[j] != v {
+					continue
+				}
+
+				from := j
+				to := i
+				result = shiftSlice(result, from, to)
+				i++
+				break outer
+			}
+		}
+	}
+
+	if !isValidUpdate(result, rules) {
+		fmt.Println(fmt.Errorf("invalid update\n before: %v\n after: %v", update, result))
+	}
+
+	return result
 }
 
 func isValidUpdate(update []int, rules map[int][]int) bool {
@@ -160,4 +167,23 @@ func isValidUpdate(update []int, rules map[int][]int) bool {
 	}
 
 	return true
+}
+
+func shiftSlice(input []int, from, to int) []int {
+	if from >= len(input) || to >= len(input) || from < 0 || to < 0 {
+		panic(fmt.Errorf("invalid input for slice of length %d. Got from: %d to: %d", len(input), from, to))
+	}
+
+	result := make([]int, len(input))
+	copy(result, input)
+
+	last := result[from]
+
+	for i := from; i < to; i++ {
+		result[i] = result[i+1]
+	}
+
+	result[to] = last
+
+	return result
 }
