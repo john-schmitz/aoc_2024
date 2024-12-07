@@ -45,7 +45,7 @@ func TestPartTwo(t *testing.T) {
 		{
 			desc:     "sample",
 			filepath: "sample.txt",
-			expected: -1,
+			expected: 6,
 		},
 		{
 			desc:     "input",
