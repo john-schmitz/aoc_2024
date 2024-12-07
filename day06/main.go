@@ -60,6 +60,15 @@ func move(lines []string, current_point Point, direction_index int, directions [
 		next_point = Point{current_point.i + current_direction.i, current_point.j + current_direction.j}
 
 	}
+
+	if isPointInBoard(next_point, lines) && lines[next_point.i][next_point.j] == '#' {
+		direction_index++
+		direction_index = direction_index % 4
+
+		current_direction = directions[direction_index]
+		next_point = Point{current_point.i + current_direction.i, current_point.j + current_direction.j}
+
+	}
 	current_point = next_point
 	return current_point, current_direction, direction_index
 }
@@ -75,7 +84,6 @@ func partTwo(filePath string) (int, error) {
 	lines := strings.Split(strings.TrimSpace(string(bytes)), "\n")
 
 	total := 0
-	fmt.Println(len(lines) * len(lines[0]))
 	for i := 0; i < len(lines); i++ {
 		for j := 0; j < len(lines[0]); j++ {
 			if lines[i][j] == '#' || lines[i][j] == '^' {
@@ -120,7 +128,7 @@ func isLoop(lines []string) bool {
 		faster_current_point, faster_direction, d2 = move(lines, faster_current_point, d2, directions, faster_direction)
 		faster_current_point, faster_direction, d2 = move(lines, faster_current_point, d2, directions, faster_direction)
 
-		if current_point == faster_current_point {
+		if current_point == faster_current_point && current_direction == faster_direction {
 			return true
 		}
 	}
