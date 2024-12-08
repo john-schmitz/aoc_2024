@@ -27,26 +27,17 @@ import (
 )
 
 func partOne(filePath string) (int, error) {
-	return 0, nil
+	bytes, _ := os.ReadFile(filePath)
+	lines := strings.Split(strings.TrimSpace(string(bytes)), "\n")
+
+	return len(lines), nil
 }
 
 func partTwo(filePath string) (int, error) {
-	return 0, nil
-}
+	bytes, _ := os.ReadFile(filePath)
+	lines := strings.Split(strings.TrimSpace(string(bytes)), "\n")
 
-func getLines(path string) ([]string, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	var lines []string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	return lines, scanner.Err()
+	return len(lines), nil
 }
 EOL
 
