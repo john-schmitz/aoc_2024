@@ -73,6 +73,55 @@ func partOne(filePath string) (int, error) {
 	return total, nil
 }
 
+func partTwo(filePath string) (int, error) {
+	bytes, _ := os.ReadFile(filePath)
+	lines := strings.Split(strings.TrimSpace(string(bytes)), "\n")
+
+	trails := getTrails(lines)
+	total := 0
+
+	for _, trail := range trails {
+		reached := make(map[Point]bool)
+
+		total += dfs(trail, lines, reached)
+
+	}
+
+	return total, nil
+}
+
+func dfs(start Point, lines []string, reached map[Point]bool) int {
+	if !inBounds(start, lines) {
+		return 0
+	}
+
+	if lines[start.x][start.y] == '9' {
+		return 1
+	}
+
+	reached[start] = true
+
+	directions := []Point{
+		{1, 0},  // UP
+		{0, 1},  // RIGHT
+		{-1, 0}, // DOWN
+		{0, -1}, // LEFT
+	}
+
+	total := 0
+
+	for _, direction := range directions {
+		next_point := Point{direction.x + start.x, direction.y + start.y}
+		if inBounds(next_point, lines) && canMove(start, next_point, lines) {
+			total += dfs(next_point, lines, reached)
+		}
+	}
+
+	reached[start] = false
+
+	return total
+}
+
 func canMove(from, to Point, board []string) bool {
 	l, _ := strconv.Atoi(string(board[from.x][from.y]))
 	r, _ := strconv.Atoi(string(board[to.x][to.y]))
@@ -97,11 +146,4 @@ func getTrails(lines []string) []Point {
 	}
 
 	return trails
-}
-
-func partTwo(filePath string) (int, error) {
-	bytes, _ := os.ReadFile(filePath)
-	lines := strings.Split(strings.TrimSpace(string(bytes)), "\n")
-
-	return len(lines), nil
 }
