@@ -99,8 +99,6 @@ func dfs(start Point, lines []string, reached map[Point]bool) int {
 		return 1
 	}
 
-	reached[start] = true
-
 	directions := []Point{
 		{1, 0},  // UP
 		{0, 1},  // RIGHT
@@ -116,8 +114,6 @@ func dfs(start Point, lines []string, reached map[Point]bool) int {
 			total += dfs(next_point, lines, reached)
 		}
 	}
-
-	reached[start] = false
 
 	return total
 }
