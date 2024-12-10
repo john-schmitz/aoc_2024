@@ -81,16 +81,14 @@ func partTwo(filePath string) (int, error) {
 	total := 0
 
 	for _, trail := range trails {
-		reached := make(map[Point]bool)
-
-		total += dfs(trail, lines, reached)
+		total += dfs(trail, lines)
 
 	}
 
 	return total, nil
 }
 
-func dfs(start Point, lines []string, reached map[Point]bool) int {
+func dfs(start Point, lines []string) int {
 	if !inBounds(start, lines) {
 		return 0
 	}
@@ -111,7 +109,7 @@ func dfs(start Point, lines []string, reached map[Point]bool) int {
 	for _, direction := range directions {
 		next_point := Point{direction.x + start.x, direction.y + start.y}
 		if inBounds(next_point, lines) && canMove(start, next_point, lines) {
-			total += dfs(next_point, lines, reached)
+			total += dfs(next_point, lines)
 		}
 	}
 
