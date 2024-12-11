@@ -7,15 +7,32 @@ import (
 	"strings"
 )
 
-func blinkStones(stones []int) []int {
-	result := []int{}
+func blinkStones(stones []int, iterations int) int {
+	stonesMap := make(map[int]int)
 
 	for _, stone := range stones {
-		blink_result := blinkStone(stone)
-		result = append(result, blink_result...)
+		stonesMap[stone] = 1
 	}
 
-	return result
+	for i := 0; i < iterations; i++ {
+		newMap := make(map[int]int)
+
+		for stone, quantity := range stonesMap {
+			for _, transformed_stone := range blinkStone(stone) {
+				current, _ := newMap[transformed_stone]
+
+				newMap[transformed_stone] = current + quantity
+			}
+		}
+		stonesMap = newMap
+	}
+
+	total := 0
+	for _, v := range stonesMap {
+		total += v
+	}
+
+	return total
 }
 
 func blinkStone(stone int) []int {
@@ -49,14 +66,7 @@ func partOne(filePath string) (int, error) {
 		stones = append(stones, num)
 	}
 
-	i := 0
-
-	for i < 25 {
-		stones = blinkStones(stones)
-		i++
-	}
-
-	return len(stones), nil
+	return blinkStones(stones, 25), nil
 }
 
 func partTwo(filePath string) (int, error) {
@@ -71,12 +81,5 @@ func partTwo(filePath string) (int, error) {
 		stones = append(stones, num)
 	}
 
-	i := 0
-
-	for i < 75 {
-		stones = blinkStones(stones)
-		i++
-	}
-
-	return len(stones), nil
+	return blinkStones(stones, 75), nil
 }
