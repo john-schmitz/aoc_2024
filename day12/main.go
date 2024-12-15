@@ -10,6 +10,8 @@ type Point struct {
 	y int
 }
 
+type Region = map[Point]bool
+
 func (p Point) sum(point Point) Point {
 	return Point{p.x + point.x, p.y + point.y}
 }
@@ -32,12 +34,6 @@ func nextUnreachedPoint(x int, y int, reached map[Point]bool) (Point, bool) {
 }
 
 func partOne(lines []string) (int, error) {
-	reached := make(map[Point]bool)
-	frontier := make([]Point, 1)
-
-	frontier[0] = Point{0, 0}
-	current_cursor := lines[0][0]
-
 	directions := []Point{
 		{1, 0},  // UP
 		{0, 1},  // RIGHT
@@ -48,46 +44,59 @@ func partOne(lines []string) (int, error) {
 	x := len(lines)
 	y := len(lines[0])
 
+	reached := make(map[Point]bool)
+	regions := make([]Region, 0)
+
+	total_price := 0
+
 	for i := 0; i < x; i++ {
 		for j := 0; j < y; j++ {
-			reached[Point{i, j}] = false
+			if reached[Point{i, j}] {
+				continue
+			}
+
+			region := make(Region)
+
+			frontier := make([]Point, 1)
+			frontier[0] = Point{i, j}
+
+			reached[Point{i, j}] = true
+			region[Point{i, j}] = true
+			crop := lines[i][j]
+
+			for len(frontier) > 0 {
+				current := frontier[0]
+				frontier = frontier[1:]
+
+				for _, direction := range directions {
+					next_point := direction.sum(current)
+
+					if inBounds(next_point, lines) && lines[next_point.x][next_point.y] == crop && !region[next_point] {
+						frontier = append(frontier, next_point)
+						region[next_point] = true
+						reached[next_point] = true
+					}
+				}
+			}
+
+			regions = append(regions, region)
 		}
 	}
 
-	reached[Point{0, 0}] = true
-	current_area := 0
-	current_perimether := 0
+	for _, region := range regions {
+		perimeter := 0
 
-	total_price := 0
-	for len(frontier) > 0 {
-		current := frontier[0]
-		frontier = frontier[1:]
-		for _, direction := range directions {
-			next_point := direction.sum(current)
+		for point := range region {
+			for _, direction := range directions {
+				next_point := direction.sum(point)
 
-			if !inBounds(next_point, lines) || lines[next_point.x][next_point.y] != current_cursor {
-				current_perimether++
-			}
-
-			if inBounds(next_point, lines) && lines[next_point.x][next_point.y] == current_cursor && !reached[next_point] {
-				frontier = append(frontier, next_point)
-				reached[next_point] = true
+				if !inBounds(next_point, lines) || lines[next_point.x][next_point.y] != lines[point.x][point.y] {
+					perimeter++
+				}
 			}
 		}
 
-		current_area++
-		reached[current] = true
-
-		if len(frontier) == 0 {
-			next, found := nextUnreachedPoint(x, y, reached)
-			if found {
-				frontier = append(frontier, next)
-				current_cursor = lines[next.x][next.y]
-			}
-			total_price += current_area * current_perimether
-			current_area = 0
-			current_perimether = 0
-		}
+		total_price += len(region) * perimeter
 	}
 
 	return total_price, nil

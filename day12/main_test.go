@@ -17,6 +17,10 @@ func TestBoardPrice(t *testing.T) {
 			expected: 40,
 		},
 		{
+			input:    []string{"AAAA", "BBBC"},
+			expected: 68,
+		},
+		{
 			input:    []string{"AAAA", "BBCD", "BBCC", "EEEC"},
 			expected: 140,
 		},
