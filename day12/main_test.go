@@ -83,7 +83,7 @@ func TestPartTwo(t *testing.T) {
 		{
 			desc:     "sample",
 			filepath: "sample.txt",
-			expected: -1,
+			expected: 1206,
 		},
 		{
 			desc:     "input",
@@ -94,7 +94,9 @@ func TestPartTwo(t *testing.T) {
 
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
-			result, err := partTwo(tC.filepath)
+			bytes, _ := os.ReadFile(tC.filepath)
+			lines := strings.Split(strings.TrimSpace(string(bytes)), "\n")
+			result, err := partTwo(lines)
 			if err != nil {
 				panic(err)
 			}
